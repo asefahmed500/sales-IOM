@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { authClient } from '@/lib/auth-client'
+import { cookies } from 'next/headers'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -33,6 +34,11 @@ export default function LoginPage() {
       }
 
       if (data?.user) {
+        // Set the user role in localStorage (as we can't set cookies from client)
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('user_role', data.user.role)
+        }
+        
         // Redirect based on role
         const role = data.user.role
         switch (role) {

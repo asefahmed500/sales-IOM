@@ -38,7 +38,7 @@ interface CommissionRecord {
   salesTotal: number
   targetAchievement: number
   commissionRate: number
-  status: 'pending' | 'approved' | 'paid'
+  status: 'pending' | 'approved' | 'rejected' | 'paid'
 }
 
 export default function ManagerDashboard() {
@@ -139,6 +139,7 @@ export default function ManagerDashboard() {
     <DashboardLayout 
       title="Manager Dashboard" 
       subtitle="Team Performance Overview"
+      requiredRole="manager"
     >
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

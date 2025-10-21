@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { auth } from '@/lib/auth'
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -16,36 +15,22 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Redirect root to login if not authenticated
+  // Allow access to homepage
   if (pathname === '/') {
+    return NextResponse.next()
+  }
+
+  // Check for session token in cookies
+  const sessionToken = request.cookies.get('better-auth.session_token')?.value
+
+  if (!sessionToken) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  // Verify session using Better Auth
-  const session = await auth.api.getSession({
-    headers: request.headers,
-  })
-
-  if (!session?.user) {
-    return NextResponse.redirect(new URL('/login', request.url))
-  }
-
-  // Role-based access control
-  const role = session.user.role
+  // For specific dashboard routes, check role-based access
+  // We'll allow the request to proceed and handle role checking in the page components
+  // This avoids the Edge Runtime limitations with database access
   
-  // Check if user is trying to access a role-specific dashboard
-  if (pathname.startsWith('/admin/') && role !== 'admin') {
-    return NextResponse.redirect(new URL(`/${role}/dashboard`, request.url))
-  }
-  
-  if (pathname.startsWith('/manager/') && role !== 'manager') {
-    return NextResponse.redirect(new URL(`/${role}/dashboard`, request.url))
-  }
-  
-  if (pathname.startsWith('/executive/') && role !== 'executive') {
-    return NextResponse.redirect(new URL(`/${role}/dashboard`, request.url))
-  }
-
   return NextResponse.next()
 }
 

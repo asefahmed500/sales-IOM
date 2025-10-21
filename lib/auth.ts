@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth"
 import { mongodbAdapter } from "better-auth/adapters/mongodb"
 import { MongoClient } from "mongodb"
+import { cookies } from "next/headers"
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/sales-commission-system'
 const client = new MongoClient(MONGODB_URI, {
@@ -81,6 +82,13 @@ export const auth = betterAuth({
       },
     },
   },
+  callbacks: {
+    beforeSession: async (session: any) => {
+      // This runs before a session is created
+      // We can modify the session data here if needed
+      return session
+    },
+  }
 })
 
 export type Session = typeof auth.$Infer.Session

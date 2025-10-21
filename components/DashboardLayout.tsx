@@ -10,6 +10,7 @@ interface DashboardLayoutProps {
   children: React.ReactNode
   title: string
   subtitle?: string
+  requiredRole?: 'admin' | 'manager' | 'executive'
 }
 
 interface User {
@@ -21,7 +22,7 @@ interface User {
   profilePicture?: string
 }
 
-export function DashboardLayout({ children, title, subtitle }: DashboardLayoutProps) {
+export function DashboardLayout({ children, title, subtitle, requiredRole }: DashboardLayoutProps) {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -33,6 +34,22 @@ export function DashboardLayout({ children, title, subtitle }: DashboardLayoutPr
 
   const fetchUserData = async () => {
     try {
+      // First validate the session
+      const validationResponse = await fetch('/api/auth/validate')
+      if (!validationResponse.ok) {
+        router.push('/login')
+        return
+      }
+
+      const validationData = await validationResponse.json()
+      
+      // Check if role matches required role
+      if (requiredRole && validationData.role !== requiredRole) {
+        router.push(`/${validationData.role}/dashboard`)
+        return
+      }
+
+      // Fetch user data
       const response = await fetch('/api/users')
       const data = await response.json()
       if (data.length > 0) {

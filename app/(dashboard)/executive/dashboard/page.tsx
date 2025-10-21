@@ -257,6 +257,7 @@ export default function ExecutiveDashboard() {
     <DashboardLayout 
       title="Executive Dashboard" 
       subtitle={`Welcome back, ${user?.name} (${user?.employeeId})`}
+      requiredRole="executive"
     >
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
