@@ -4,14 +4,14 @@ import Sale from '@/models/Sale'
 import User from '@/models/User'
 import CommissionRule from '@/models/CommissionRule'
 import CommissionRecord from '@/models/CommissionRecord'
-import { authClient } from '@/lib/auth-client'
+import { auth } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
   try {
     await dbConnect()
     
-    const session = await authClient.getSession({
-      headers: request.headers
+    const session = await auth.api.getSession({
+      headers: request.headers,
     })
 
     if (!session?.user) {
@@ -65,14 +65,15 @@ export async function POST(request: NextRequest) {
     const commissionRate = applicableRule?.commissionRate || 0
     const commissionAmount = totalSales * (commissionRate / 100)
 
-    // Save commission record
+    // Save commission record with pending status
     const commissionRecord = new CommissionRecord({
       salesExecutive: executiveId,
       amount: commissionAmount,
       calculatedBy: session.user.id,
       salesTotal: totalSales,
       targetAchievement: achievement,
-      commissionRate: commissionRate
+      commissionRate: commissionRate,
+      status: 'pending' // Set initial status to pending
     })
 
     await commissionRecord.save()

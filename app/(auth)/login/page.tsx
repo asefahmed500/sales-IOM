@@ -96,14 +96,6 @@ export default function LoginPage() {
               {isLoading ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>
-          <div className="mt-6 text-sm text-gray-600">
-            <p className="font-medium mb-2">Demo Accounts:</p>
-            <div className="space-y-1 text-xs">
-              <p><strong>Admin:</strong> admin@company.com / admin123</p>
-              <p><strong>Manager:</strong> manager@company.com / manager123</p>
-              <p><strong>Executive:</strong> john@company.com / exec123</p>
-            </div>
-          </div>
           <div className="mt-4 text-center text-sm">
             <span className="text-gray-600">Don't have an account? </span>
             <Link href="/register" className="text-primary hover:underline">

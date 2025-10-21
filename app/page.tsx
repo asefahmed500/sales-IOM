@@ -24,7 +24,7 @@ export default function HomePage() {
               <a href="#pricing" className="text-gray-600 hover:text-gray-900 transition-colors">Pricing</a>
               <a href="#about" className="text-gray-600 hover:text-gray-900 transition-colors">About</a>
               <Link href="/login">
-                <Button variant="outline">Sign In</Button>
+                <Button variant="outline">Create New Account</Button>
               </Link>
               <Link href="/register">
                 <Button>Get Started</Button>
@@ -151,6 +151,176 @@ export default function HomePage() {
                 </CardDescription>
               </CardHeader>
             </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Dashboard Mockup Section */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Powerful Dashboard Overview
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Get real-time insights into your sales performance and team metrics.
+            </p>
+          </div>
+          
+          <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+            {/* Dashboard Header */}
+            <div className="flex justify-between items-center mb-8">
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900">Sales Performance Dashboard</h3>
+                <p className="text-gray-600">Real-time metrics and analytics</p>
+              </div>
+              <div className="flex space-x-2">
+                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+              </div>
+            </div>
+            
+            {/* Stats Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              {/* Stat Card 1 */}
+              <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-6 text-white">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="text-blue-100">Total Revenue</p>
+                    <h4 className="text-2xl font-bold mt-2">$42,567</h4>
+                    <p className="text-blue-100 text-sm mt-1">+12.5% from last month</p>
+                  </div>
+                  <div className="bg-blue-400 bg-opacity-30 p-3 rounded-lg">
+                    <DollarSign className="h-6 w-6" />
+                  </div>
+                </div>
+              </div>
+              
+              {/* Stat Card 2 */}
+              <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-6 text-white">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="text-green-100">Active Users</p>
+                    <h4 className="text-2xl font-bold mt-2">1,248</h4>
+                    <p className="text-green-100 text-sm mt-1">+8.2% from last month</p>
+                  </div>
+                  <div className="bg-green-400 bg-opacity-30 p-3 rounded-lg">
+                    <Users className="h-6 w-6" />
+                  </div>
+                </div>
+              </div>
+              
+              {/* Stat Card 3 */}
+              <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg p-6 text-white">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="text-purple-100">Conversion Rate</p>
+                    <h4 className="text-2xl font-bold mt-2">24.8%</h4>
+                    <p className="text-purple-100 text-sm mt-1">+3.1% from last month</p>
+                  </div>
+                  <div className="bg-purple-400 bg-opacity-30 p-3 rounded-lg">
+                    <TrendingUp className="h-6 w-6" />
+                  </div>
+                </div>
+              </div>
+              
+              {/* Stat Card 4 */}
+              <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg p-6 text-white">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="text-orange-100">Avg. Deal Size</p>
+                    <h4 className="text-2xl font-bold mt-2">$3,240</h4>
+                    <p className="text-orange-100 text-sm mt-1">+5.7% from last month</p>
+                  </div>
+                  <div className="bg-orange-400 bg-opacity-30 p-3 rounded-lg">
+                    <BarChart3 className="h-6 w-6" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Charts Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              {/* Revenue Chart */}
+              <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                <h4 className="font-bold text-gray-900 mb-4">Revenue Overview</h4>
+                <div className="h-64 flex items-end space-x-2">
+                  {[65, 80, 60, 90, 75, 95, 85, 100, 70, 85, 90, 110].map((height, index) => (
+                    <div key={index} className="flex flex-col items-center flex-1">
+                      <div 
+                        className="w-full bg-gradient-to-t from-blue-500 to-blue-400 rounded-t hover:from-blue-600 hover:to-blue-500 transition-all duration-300" 
+                        style={{ height: `${height}%` }}
+                      ></div>
+                      <span className="text-xs text-gray-500 mt-2">{['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'][index]}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Team Performance */}
+              <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                <h4 className="font-bold text-gray-900 mb-4">Team Performance</h4>
+                <div className="space-y-4">
+                  {[
+                    { name: 'John Doe', role: 'Sales Executive', performance: 95 },
+                    { name: 'Jane Smith', role: 'Sales Executive', performance: 87 },
+                    { name: 'Mike Johnson', role: 'Sales Executive', performance: 78 },
+                    { name: 'Sarah Wilson', role: 'Sales Executive', performance: 92 }
+                  ].map((member, index) => (
+                    <div key={index} className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold mr-3">
+                          {member.name.charAt(0)}
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900">{member.name}</p>
+                          <p className="text-sm text-gray-500">{member.role}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center">
+                        <div className="w-24 bg-gray-200 rounded-full h-2 mr-2">
+                          <div 
+                            className="bg-gradient-to-r from-green-400 to-green-500 h-2 rounded-full" 
+                            style={{ width: `${member.performance}%` }}
+                          ></div>
+                        </div>
+                        <span className="text-sm font-medium text-gray-900">{member.performance}%</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            
+            {/* Recent Activity */}
+            <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+              <h4 className="font-bold text-gray-900 mb-4">Recent Activity</h4>
+              <div className="space-y-4">
+                {[
+                  { action: 'New sale recorded', user: 'John Doe', amount: '$2,400', time: '2 min ago' },
+                  { action: 'Commission calculated', user: 'Jane Smith', amount: '$360', time: '15 min ago' },
+                  { action: 'Target achieved', user: 'Mike Johnson', amount: '105%', time: '1 hour ago' },
+                  { action: 'New user registered', user: 'Sarah Wilson', amount: 'Executive', time: '3 hours ago' }
+                ].map((activity, index) => (
+                  <div key={index} className="flex items-center justify-between py-3 border-b border-gray-200 last:border-0">
+                    <div className="flex items-center">
+                      <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                        <CheckCircle className="h-4 w-4 text-blue-500" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-900">{activity.action}</p>
+                        <p className="text-sm text-gray-500">{activity.user}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-medium text-gray-900">{activity.amount}</p>
+                      <p className="text-sm text-gray-500">{activity.time}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>

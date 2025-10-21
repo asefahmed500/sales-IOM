@@ -14,7 +14,8 @@ export default function RegisterPage() {
     email: '',
     password: '',
     confirmPassword: '',
-    phone: ''
+    phone: '',
+    designation: 'Sales Executive'
   })
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
@@ -42,6 +43,7 @@ export default function RegisterPage() {
           email: formData.email,
           password: formData.password,
           phone: formData.phone,
+          designation: formData.designation,
           role: 'executive' // Default role for self-registration
         }),
       })
@@ -90,6 +92,17 @@ export default function RegisterPage() {
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 required
                 placeholder="Enter your email"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="designation">Designation</Label>
+              <Input
+                id="designation"
+                type="text"
+                value={formData.designation}
+                onChange={(e) => setFormData({ ...formData, designation: e.target.value })}
+                required
+                placeholder="Enter your designation"
               />
             </div>
             <div className="space-y-2">

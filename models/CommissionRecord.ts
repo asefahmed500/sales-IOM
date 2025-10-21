@@ -8,6 +8,12 @@ export interface ICommissionRecord extends Document {
   salesTotal: number
   targetAchievement: number
   commissionRate: number
+  status: 'pending' | 'approved' | 'rejected' | 'paid'
+  approvedBy?: mongoose.Types.ObjectId
+  approvedDate?: Date
+  rejectedBy?: mongoose.Types.ObjectId
+  rejectedDate?: Date
+  paidDate?: Date
   createdAt: Date
   updatedAt: Date
 }
@@ -47,6 +53,33 @@ const CommissionRecordSchema: Schema = new Schema({
     type: Number,
     required: true,
     min: 0
+  },
+  status: {
+    type: String,
+    enum: ['pending', 'approved', 'rejected', 'paid'],
+    default: 'pending'
+  },
+  approvedBy: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: false
+  },
+  approvedDate: {
+    type: Date,
+    required: false
+  },
+  rejectedBy: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: false
+  },
+  rejectedDate: {
+    type: Date,
+    required: false
+  },
+  paidDate: {
+    type: Date,
+    required: false
   }
 }, {
   timestamps: true

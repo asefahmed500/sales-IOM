@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { formatCurrency, formatPercentage } from '@/lib/utils'
-import { Users, DollarSign, TrendingUp, Shield, UserPlus, BarChart3 } from 'lucide-react'
+import { Users, DollarSign, TrendingUp, Shield, UserPlus, BarChart3, CheckCircle, XCircle, Clock } from 'lucide-react'
 
 interface User {
   _id: string
@@ -17,6 +17,7 @@ interface User {
   role: string
   employeeId: string
   assignedTarget: number
+  isActive: boolean
 }
 
 interface Sale {
@@ -28,9 +29,22 @@ interface Sale {
   salesExecutive: string
 }
 
+interface CommissionRecord {
+  _id: string
+  salesExecutive: string
+  amount: number
+  calculatedBy: string
+  calculationDate: string
+  salesTotal: number
+  targetAchievement: number
+  commissionRate: number
+  status: 'pending' | 'approved' | 'rejected' | 'paid'
+}
+
 export default function AdminDashboard() {
   const [users, setUsers] = useState<User[]>([])
   const [sales, setSales] = useState<Sale[]>([])
+  const [commissionRecords, setCommissionRecords] = useState<CommissionRecord[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -39,16 +53,19 @@ export default function AdminDashboard() {
 
   const fetchData = async () => {
     try {
-      const [usersResponse, salesResponse] = await Promise.all([
+      const [usersResponse, salesResponse, commissionsResponse] = await Promise.all([
         fetch('/api/users'),
-        fetch('/api/sales')
+        fetch('/api/sales'),
+        fetch('/api/commission/records')
       ])
 
       const usersData = await usersResponse.json()
       const salesData = await salesResponse.json()
+      const commissionsData = await commissionsResponse.json()
 
       setUsers(usersData)
       setSales(salesData)
+      setCommissionRecords(commissionsData)
     } catch (error) {
       console.error('Error fetching data:', error)
     } finally {
@@ -60,6 +77,15 @@ export default function AdminDashboard() {
   const totalSales = sales.reduce((sum, sale) => sum + sale.saleAmount, 0)
   const executives = users.filter(user => user.role === 'executive')
   const managers = users.filter(user => user.role === 'manager')
+  const activeUsers = users.filter(user => user.isActive !== false)
+  
+  // Calculate commission statistics
+  const pendingCommissions = commissionRecords.filter(record => record.status === 'pending').length
+  const approvedCommissions = commissionRecords.filter(record => record.status === 'approved').length
+  const paidCommissions = commissionRecords.filter(record => record.status === 'paid').length
+  const totalCommissionAmount = commissionRecords
+    .filter(record => record.status === 'approved' || record.status === 'paid')
+    .reduce((sum, record) => sum + record.amount, 0)
 
   return (
     <DashboardLayout 
@@ -82,16 +108,59 @@ export default function AdminDashboard() {
         />
         <DashboardCard
           title="Active Users"
-          value={users.filter(user => user.role !== 'admin').length}
+          value={activeUsers.length}
           icon={<Shield className="h-4 w-4 text-muted-foreground" />}
           subtitle="Non-admin users"
         />
         <DashboardCard
-          title="System Health"
-          value="Good"
+          title="Total Commissions"
+          value={totalCommissionAmount}
+          format="currency"
           icon={<BarChart3 className="h-4 w-4 text-muted-foreground" />}
-          subtitle="All systems operational"
+          subtitle="Approved & paid commissions"
         />
+      </div>
+
+      {/* Commission Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Clock className="h-5 w-5 mr-2 text-yellow-500" />
+              Pending Commissions
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-yellow-600">{pendingCommissions}</div>
+            <p className="text-sm text-muted-foreground">Awaiting approval</p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <CheckCircle className="h-5 w-5 mr-2 text-green-500" />
+              Approved Commissions
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-green-600">{approvedCommissions}</div>
+            <p className="text-sm text-muted-foreground">Ready for payment</p>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <DollarSign className="h-5 w-5 mr-2 text-blue-500" />
+              Paid Commissions
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-blue-600">{paidCommissions}</div>
+            <p className="text-sm text-muted-foreground">Successfully processed</p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* System Overview */}
@@ -144,7 +213,9 @@ export default function AdminDashboard() {
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="default">Active</Badge>
+                          <Badge variant={user.isActive ? 'default' : 'destructive'}>
+                            {user.isActive ? 'Active' : 'Inactive'}
+                          </Badge>
                         </TableCell>
                       </TableRow>
                     )
@@ -181,6 +252,57 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Recent Commission Activity */}
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle>Recent Commission Activity</CardTitle>
+          <CardDescription>Latest commission calculations and approvals</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {commissionRecords.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>No commission activity found</p>
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Executive</TableHead>
+                  <TableHead>Amount</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {commissionRecords.slice(0, 5).map((record) => {
+                  const executive = executives.find(user => user._id === record.salesExecutive)
+                  return (
+                    <TableRow key={record._id}>
+                      <TableCell>
+                        <div className="font-medium">{executive?.name || 'Unknown'}</div>
+                        <div className="text-sm text-muted-foreground">{executive?.employeeId}</div>
+                      </TableCell>
+                      <TableCell className="font-semibold">{formatCurrency(record.amount)}</TableCell>
+                      <TableCell>{new Date(record.calculationDate).toLocaleDateString()}</TableCell>
+                      <TableCell>
+                        <Badge variant={
+                          record.status === 'pending' ? 'secondary' : 
+                          record.status === 'approved' ? 'default' : 
+                          record.status === 'paid' ? 'outline' : 'destructive'
+                        }>
+                          {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
 
       {/* System Status */}
       <Card className="mt-6">

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import dbConnect from '@/lib/db'
 import User from '@/models/User'
-import { authClient } from '@/lib/auth-client'
+import { auth } from '@/lib/auth'
 
 export async function PUT(
   request: NextRequest,
@@ -10,8 +10,8 @@ export async function PUT(
   try {
     await dbConnect()
     
-    const session = await authClient.getSession({
-      headers: request.headers
+    const session = await auth.api.getSession({
+      headers: request.headers,
     })
 
     if (!session?.user) {
@@ -53,8 +53,8 @@ export async function DELETE(
   try {
     await dbConnect()
     
-    const session = await authClient.getSession({
-      headers: request.headers
+    const session = await auth.api.getSession({
+      headers: request.headers,
     })
 
     if (!session?.user) {

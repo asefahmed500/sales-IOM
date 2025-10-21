@@ -1,7 +1,9 @@
 import { createAuthClient } from "better-auth/react"
+import { bearer } from "better-auth/client/plugins"
 
 export const authClient = createAuthClient({
-  baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "http://localhost:3000",
+  baseURL: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+  plugins: [bearer()]
 })
 
 export const { signIn, signOut, useSession } = authClient

@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { uploadImage } from '@/lib/cloudinary'
-import { authClient } from '@/lib/auth-client'
+import { auth } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await authClient.getSession({
-      headers: request.headers
+    const session = await auth.api.getSession({
+      headers: request.headers,
     })
 
     if (!session?.user) {

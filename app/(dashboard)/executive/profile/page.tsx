@@ -37,10 +37,17 @@ export default function ExecutiveProfile() {
     name: '',
     phone: ''
   })
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  })
   const [profilePicture, setProfilePicture] = useState<File | null>(null)
   const [profilePictureUrl, setProfilePictureUrl] = useState<string>('')
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
+  const [passwordError, setPasswordError] = useState('')
+  const [passwordSuccess, setPasswordSuccess] = useState('')
   const router = useRouter()
 
   useEffect(() => {
@@ -87,6 +94,55 @@ export default function ExecutiveProfile() {
       }
     } catch (error) {
       console.error('Error updating profile:', error)
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setPasswordError('')
+    setPasswordSuccess('')
+
+    // Validate passwords
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setPasswordError('New passwords do not match')
+      return
+    }
+
+    if (passwordData.newPassword.length < 6) {
+      setPasswordError('Password must be at least 6 characters long')
+      return
+    }
+
+    setIsSaving(true)
+    try {
+      const response = await fetch('/api/auth/reset-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword
+        }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setPasswordSuccess('Password updated successfully')
+        setPasswordData({
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        })
+      } else {
+        setPasswordError(data.error || 'Failed to update password')
+      }
+    } catch (error) {
+      console.error('Error updating password:', error)
+      setPasswordError('Failed to update password')
     } finally {
       setIsSaving(false)
     }
@@ -322,21 +378,47 @@ export default function ExecutiveProfile() {
                 <CardDescription>Update your account password</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
+                <form onSubmit={handlePasswordChange} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="currentPassword">Current Password</Label>
-                    <Input id="currentPassword" type="password" />
+                    <Input 
+                      id="currentPassword" 
+                      type="password" 
+                      value={passwordData.currentPassword}
+                      onChange={(e) => setPasswordData({...passwordData, currentPassword: e.target.value})}
+                      required
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="newPassword">New Password</Label>
-                    <Input id="newPassword" type="password" />
+                    <Input 
+                      id="newPassword" 
+                      type="password" 
+                      value={passwordData.newPassword}
+                      onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
+                      required
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                    <Input id="confirmPassword" type="password" />
+                    <Input 
+                      id="confirmPassword" 
+                      type="password" 
+                      value={passwordData.confirmPassword}
+                      onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
+                      required
+                    />
                   </div>
-                  <Button>Update Password</Button>
-                </div>
+                  {passwordError && (
+                    <div className="text-red-500 text-sm">{passwordError}</div>
+                  )}
+                  {passwordSuccess && (
+                    <div className="text-green-500 text-sm">{passwordSuccess}</div>
+                  )}
+                  <Button type="submit" disabled={isSaving}>
+                    {isSaving ? 'Updating...' : 'Update Password'}
+                  </Button>
+                </form>
               </CardContent>
             </Card>
           </div>

@@ -6,11 +6,14 @@ export interface IUser extends Document {
   password: string
   role: 'admin' | 'manager' | 'executive'
   employeeId: string
+  designation: string
   assignedManager?: mongoose.Types.ObjectId
   assignedTarget?: number
   phone?: string
   profilePicture?: string
   isActive?: boolean
+  twoFactorEnabled?: boolean
+  twoFactorSecret?: string
   createdAt: Date
   updatedAt: Date
 }
@@ -42,6 +45,10 @@ const UserSchema: Schema = new Schema({
     required: true,
     unique: true
   },
+  designation: {
+    type: String,
+    required: true
+  },
   assignedManager: {
     type: Schema.Types.ObjectId,
     ref: 'User',
@@ -62,6 +69,14 @@ const UserSchema: Schema = new Schema({
   isActive: {
     type: Boolean,
     default: true
+  },
+  twoFactorEnabled: {
+    type: Boolean,
+    default: false
+  },
+  twoFactorSecret: {
+    type: String,
+    required: false
   }
 }, {
   timestamps: true

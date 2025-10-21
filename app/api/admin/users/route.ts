@@ -2,14 +2,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import dbConnect from '@/lib/db'
 import User from '@/models/User'
 import bcrypt from 'bcryptjs'
-import { authClient } from '@/lib/auth-client'
+import { auth } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
   try {
     await dbConnect()
     
-    const session = await authClient.getSession({
-      headers: request.headers
+    const session = await auth.api.getSession({
+      headers: request.headers,
     })
 
     if (!session?.user) {
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Only admins can create users' }, { status: 403 })
     }
 
-    const { name, email, password, role, phone, assignedTarget, assignedManager } = await request.json()
+    const { name, email, password, role, phone, assignedTarget, assignedManager, designation } = await request.json()
 
     if (!name || !email || !password || !role) {
       return NextResponse.json({ error: 'Name, email, password, and role are required' }, { status: 400 })
@@ -46,6 +46,7 @@ export async function POST(request: NextRequest) {
       password: hashedPassword,
       role,
       employeeId,
+      designation: designation || getDefaultDesignation(role),
       phone,
       assignedTarget,
       assignedManager: assignedManager || undefined,
@@ -62,6 +63,19 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error creating user:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}
+
+function getDefaultDesignation(role: string): string {
+  switch (role) {
+    case 'admin':
+      return 'System Administrator'
+    case 'manager':
+      return 'Sales Manager'
+    case 'executive':
+      return 'Sales Executive'
+    default:
+      return 'Employee'
   }
 }
 

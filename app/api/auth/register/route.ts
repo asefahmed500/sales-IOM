@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
   try {
     await dbConnect()
     
-    const { name, email, password, phone, role = 'executive' } = await request.json()
+    const { name, email, password, phone, role = 'executive', designation = 'Sales Executive' } = await request.json()
 
     // Validate required fields
     if (!name || !email || !password) {
@@ -33,6 +33,7 @@ export async function POST(request: NextRequest) {
       password: hashedPassword,
       role,
       employeeId,
+      designation,
       phone,
       isActive: true
     })
